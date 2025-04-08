@@ -3,7 +3,7 @@ const symbolpad = document.querySelector("#symbolpad")
 const display = document.querySelector("#display")
 let num1 = "";
 let symbol;
-let num2 = "";
+let num2 = +(display.textContent);
 let symbolClicked = false;
 
 numberpad.addEventListener("click", (e) => { 
@@ -21,24 +21,33 @@ numberpad.addEventListener("click", (e) => {
 
 symbolpad.addEventListener("click", (e) => {  
     let targetSymbol = e.target.id;
-
-    if (symbolClicked === true && (targetSymbol !== "=" && targetSymbol !== "clear")) {
-        operate(num1, symbol, num2)
-        num1 = +(display.textContent);
-        num2 = "";
-        symbol = targetSymbol;
-        display.textContent += ` ${targetSymbol} `;
-        symbolClicked = true;
-        return;
-    }
-
+    let num1ArrIncludes = (""+num1).split("").includes(".");
+    let num2ArrIncludes = (""+num2).split("").includes(".");
     if (targetSymbol !== "symbolpad") {
-        symbolClicked = true;
-        if (targetSymbol !== "=" && targetSymbol !== "clear") {
+        if (targetSymbol === '.' && symbolClicked === false && num1ArrIncludes === false) {
+            
+            display.textContent += targetSymbol;
+            num1 += targetSymbol;
+            symbolClicked = false;
+        } else if (targetSymbol === '.' && symbolClicked === true && num2ArrIncludes === false) {
+            display.textContent += targetSymbol;
+            num2 += targetSymbol;
+        }
+        if (symbolClicked === true && (targetSymbol !== "=" && targetSymbol !== "clear" && targetSymbol !== '.')) {
+            operate(num1, symbol, num2)
+            num1 = +(display.textContent);
+            num2 = "";
             symbol = targetSymbol;
             display.textContent += ` ${targetSymbol} `;
-        }
-        if (targetSymbol === "clear") {
+            symbolClicked = true;
+            return;
+        } 
+        else if (targetSymbol !== "=" && targetSymbol !== "clear" && targetSymbol !== '.') {
+            symbol = targetSymbol;
+            display.textContent += ` ${targetSymbol} `;
+            symbolClicked = true;
+        } 
+        else if (targetSymbol === "clear") {
             display.textContent = "";
             symbolClicked = false;
             num1 = "";
@@ -48,8 +57,8 @@ symbolpad.addEventListener("click", (e) => {
             operate(num1, symbol, num2);
             symbolClicked = false;
             num2 = "";
-            num1 = "";
-        }
+            num1 = +(display.textContent)
+        } 
         
     }
 })
@@ -96,6 +105,8 @@ function operate(num1, symbol, num2) {
         case '*':
             display.textContent = multiply(num1, num2);
         break;
+        case '.': 
+            
     }
     num1 = "";
     symbol = "";
